@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:student_communication_app/messages_page.dart';
+import 'package:student_communication_app/repository/messages_repository.dart';
+import 'package:student_communication_app/repository/students_repository.dart';
+import 'package:student_communication_app/repository/teachers_repository.dart';
 import 'package:student_communication_app/students_page.dart';
 import 'package:student_communication_app/teachers_page.dart';
 
@@ -23,16 +26,35 @@ class StudentApp extends StatelessWidget {
   }
 }
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
   const MainPage({super.key, required this.title});
 
   final String title;
 
   @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  late final MessagesRepository messagesRepository;
+  late final StudentsRepository studentsRepository;
+  late final TeachersRepository teachersRepository;
+
+  @override
+  void initState() {
+    super.initState();
+
+    messagesRepository = MessagesRepository();
+    studentsRepository = StudentsRepository();
+    teachersRepository = TeachersRepository();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(widget.title),
       ),
       drawer: Drawer(
         // Add a ListView to the drawer. This ensures the user can scroll
@@ -53,7 +75,7 @@ class MainPage extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
                 Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const StudentsPage(),
+                  builder: (context) => StudentsPage(studentsRepository: studentsRepository),
                 ));
               },
             ),
@@ -62,7 +84,7 @@ class MainPage extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
                 Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const TeachersPage(),
+                  builder: (context) => TeachersPage(teachersRepository: teachersRepository),
                 ));
               },
             ),
@@ -71,7 +93,7 @@ class MainPage extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
                 Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const MessagesPage(),
+                  builder: (context) => MessagesPage(messagesRepository: messagesRepository),
                 ));
               },
             ),
@@ -86,10 +108,10 @@ class MainPage extends StatelessWidget {
             TextButton(
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const MessagesPage(),
+                  builder: (context) => MessagesPage(messagesRepository:messagesRepository),
                 ));
               },
-              child: const Text("10 New Massages"),
+              child: Text("${messagesRepository.messages.length} New Massages"),
             ),
             const SizedBox(
               height: 10,
@@ -97,10 +119,10 @@ class MainPage extends StatelessWidget {
             TextButton(
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const StudentsPage(),
+                  builder: (context) => StudentsPage(studentsRepository: studentsRepository),
                 ));
               },
-              child: const Text("10 Students"),
+              child: Text("${studentsRepository.students.length} Students"),
             ),
             const SizedBox(
               height: 10,
@@ -108,10 +130,10 @@ class MainPage extends StatelessWidget {
             TextButton(
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const TeachersPage(),
+                  builder: (context) => TeachersPage(teachersRepository: teachersRepository),
                 ));
               },
-              child: const Text("10 Teachers"),
+              child: Text("${teachersRepository.teachers.length} Teachers"),
             ),
           ],
         ),
