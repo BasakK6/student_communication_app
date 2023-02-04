@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:student_communication_app/repository/teachers_repository.dart';
 
 class TeachersPage extends StatefulWidget {
-  const TeachersPage({Key? key, required this.teachersRepository}) : super(key: key);
+  const TeachersPage({Key? key, required this.teachersRepository})
+      : super(key: key);
 
   final TeachersRepository teachersRepository;
 
@@ -17,28 +18,50 @@ class _TeachersPageState extends State<TeachersPage> {
       appBar: AppBar(title: const Text("Teachers")),
       body: Column(
         children: [
-          const PhysicalModel(
+          PhysicalModel(
             color: Colors.white,
             elevation: 10,
             child: Center(
               child: Padding(
-                padding: EdgeInsets.all(32),
-                child: Text("10 Teachers"),
+                padding: const EdgeInsets.all(32),
+                child: Text(
+                    "${widget.teachersRepository.teachers.length} Teachers"),
               ),
             ),
           ),
           Expanded(
             child: ListView.separated(
-              itemBuilder: (context, index) => const ListTile(
-                leading: Text("👩🏼"),//👦🏻
-                title: Text("Sofia"),
+              itemBuilder: (context, index) => TeacherListTile(
+                teacher: widget.teachersRepository.teachers[index],
               ),
               separatorBuilder: (context, index) => const Divider(),
-              itemCount: 25,
+              itemCount: widget.teachersRepository.teachers.length,
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class TeacherListTile extends StatelessWidget {
+  const TeacherListTile({
+    super.key,
+    required this.teacher,
+  });
+
+  final Teacher teacher;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: IntrinsicWidth(
+        child: Center(
+          child: Text(teacher.gender == "female" ? "👩🏼" : "👦🏻"),
+        ),
+      ),
+      title: Text("${teacher.name} ${teacher.surname}"),
+      subtitle: Text(teacher.age.toString()),
     );
   }
 }

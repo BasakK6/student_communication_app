@@ -49,6 +49,31 @@ class _MainPageState extends State<MainPage> {
     teachersRepository = TeachersRepository();
   }
 
+  void _goToStudentsPage() {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) =>
+          StudentsPage(studentsRepository: studentsRepository),
+    ));
+  }
+
+  void _goToTeachersPage() {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) =>
+          TeachersPage(teachersRepository: teachersRepository),
+    ));
+  }
+
+  Future<void> _goToMessagesPage() async {
+    await Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) =>
+          MessagesPage(messagesRepository: messagesRepository),
+    ));
+
+    // The change in the new message count is reflected without a state management method
+    // Messages page changes the newMessageCount  to 0 in its initState
+    // In order to notify the main page UI we await the return and then, run setState
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,27 +99,21 @@ class _MainPageState extends State<MainPage> {
               title: const Text('Students'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => StudentsPage(studentsRepository: studentsRepository),
-                ));
+                _goToStudentsPage();
               },
             ),
             ListTile(
               title: const Text('Teachers'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => TeachersPage(teachersRepository: teachersRepository),
-                ));
+                _goToTeachersPage();
               },
             ),
             ListTile(
               title: const Text('Messages'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => MessagesPage(messagesRepository: messagesRepository),
-                ));
+                _goToMessagesPage();
               },
             ),
           ],
@@ -107,20 +126,16 @@ class _MainPageState extends State<MainPage> {
           children: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => MessagesPage(messagesRepository:messagesRepository),
-                ));
+                _goToMessagesPage();
               },
-              child: Text("${messagesRepository.messages.length} New Massages"),
+              child: Text("${messagesRepository.newMessageCount} New Massages"),
             ),
             const SizedBox(
               height: 10,
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => StudentsPage(studentsRepository: studentsRepository),
-                ));
+                _goToStudentsPage();
               },
               child: Text("${studentsRepository.students.length} Students"),
             ),
@@ -129,9 +144,7 @@ class _MainPageState extends State<MainPage> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => TeachersPage(teachersRepository: teachersRepository),
-                ));
+                _goToTeachersPage();
               },
               child: Text("${teachersRepository.teachers.length} Teachers"),
             ),

@@ -8,6 +8,21 @@ class StudentsRepository{
     Student("Ada", "Stanton", 18, "female"),
     Student("Jane", "Stein", 18, "female"),
   ];
+
+  final Set<Student> likedStudents = {};
+
+  bool doILikeThem(Student student) {
+    return likedStudents.contains(student);
+  }
+
+  void changeLikeStatus(Student student, bool doILike) {
+    if(doILike){
+      likedStudents.remove(student);
+    }
+    else{
+      likedStudents.add(student);
+    }
+  }
 }
 
 class Student{

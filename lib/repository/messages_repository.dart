@@ -11,8 +11,9 @@ class MessagesRepository{
     Message("Really? That would be great, thanks!", "Rachel", DateTime.now()),
     Message("No worries!", "Jane", DateTime.now()),
     Message("OK! Then, see you tomorrow!", "Rachel", DateTime.now()),
-
   ];
+
+  int newMessageCount = 11;
 }
 
 class Message{

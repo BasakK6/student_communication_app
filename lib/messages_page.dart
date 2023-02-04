@@ -13,6 +13,7 @@ class _MessagesPageState extends State<MessagesPage> {
   @override
   void initState() {
     super.initState();
+    widget.messagesRepository.newMessageCount=0;
   }
   @override
   Widget build(BuildContext context) {
