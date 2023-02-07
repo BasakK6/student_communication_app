@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student_communication_app/repository/messages_repository.dart';
 
-class MessagesPage extends StatefulWidget {
-  const MessagesPage({Key? key, required this.messagesRepository}) : super(key: key);
+class MessagesPage extends ConsumerStatefulWidget {
+  const MessagesPage({Key? key}) : super(key: key);
 
-  final MessagesRepository messagesRepository;
   @override
-  State<MessagesPage> createState() => _MessagesPageState();
+  ConsumerState<MessagesPage> createState() => _MessagesPageState();
 }
 
-class _MessagesPageState extends State<MessagesPage> {
+class _MessagesPageState extends ConsumerState<MessagesPage> {
   @override
   void initState() {
     super.initState();
-    widget.messagesRepository.newMessageCount=0;
+    Future.delayed(Duration.zero).then((value){
+      ref.read(newMessageCountProvider.notifier).makeZero();
+    });
   }
   @override
   Widget build(BuildContext context) {
+    final messagesRepository = ref.watch(messagesProvider);
+
+
     return Scaffold(
       appBar: AppBar(title: const Text("Messages")),
       body: Column(
@@ -25,10 +30,10 @@ class _MessagesPageState extends State<MessagesPage> {
             child: ListView.builder(
               reverse: true, // to show the newest messages (listview starts from the bottom)
               itemBuilder: (context, index) {
-                Message message = widget.messagesRepository.messages[widget.messagesRepository.messages.length -index -1];
+                Message message = messagesRepository.messages[messagesRepository.messages.length -index -1];
                 return MessageWidget(message: message);
               },
-              itemCount: widget.messagesRepository.messages.length,
+              itemCount: messagesRepository.messages.length,
             ),
           ),
           DecoratedBox(

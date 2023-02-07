@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student_communication_app/messages_page.dart';
 import 'package:student_communication_app/repository/messages_repository.dart';
 import 'package:student_communication_app/repository/students_repository.dart';
@@ -7,7 +8,7 @@ import 'package:student_communication_app/students_page.dart';
 import 'package:student_communication_app/teachers_page.dart';
 
 void main() {
-  runApp(const StudentApp());
+  runApp(const ProviderScope(child: StudentApp()));
 }
 
 class StudentApp extends StatelessWidget {
@@ -26,60 +27,41 @@ class StudentApp extends StatelessWidget {
   }
 }
 
-class MainPage extends StatefulWidget {
+class MainPage extends ConsumerWidget {
   const MainPage({super.key, required this.title});
 
   final String title;
 
-  @override
-  State<MainPage> createState() => _MainPageState();
-}
-
-class _MainPageState extends State<MainPage> {
-  late final MessagesRepository messagesRepository;
-  late final StudentsRepository studentsRepository;
-  late final TeachersRepository teachersRepository;
-
-  @override
-  void initState() {
-    super.initState();
-
-    messagesRepository = MessagesRepository();
-    studentsRepository = StudentsRepository();
-    teachersRepository = TeachersRepository();
-  }
-
-  void _goToStudentsPage() {
+  void _goToStudentsPage(BuildContext context) {
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) =>
-          StudentsPage(studentsRepository: studentsRepository),
+          const StudentsPage(),
     ));
   }
 
-  void _goToTeachersPage() {
+  void _goToTeachersPage(BuildContext context) {
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) =>
-          TeachersPage(teachersRepository: teachersRepository),
+          const TeachersPage(),
     ));
   }
 
-  Future<void> _goToMessagesPage() async {
+  Future<void> _goToMessagesPage(BuildContext context) async {
     await Navigator.of(context).push(MaterialPageRoute(
       builder: (context) =>
-          MessagesPage(messagesRepository: messagesRepository),
+         const MessagesPage(),
     ));
-
-    // The change in the new message count is reflected without a state management method
-    // Messages page changes the newMessageCount  to 0 in its initState
-    // In order to notify the main page UI we await the return and then, run setState
-    setState(() {});
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final studentsRepository= ref.watch(studentsProvider);
+    final newMessageCount = ref.watch(newMessageCountProvider);
+    final teachersRepository= ref.watch(teachersProvider);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(title),
       ),
       drawer: Drawer(
         // Add a ListView to the drawer. This ensures the user can scroll
@@ -99,21 +81,21 @@ class _MainPageState extends State<MainPage> {
               title: const Text('Students'),
               onTap: () {
                 Navigator.pop(context);
-                _goToStudentsPage();
+                _goToStudentsPage(context);
               },
             ),
             ListTile(
               title: const Text('Teachers'),
               onTap: () {
                 Navigator.pop(context);
-                _goToTeachersPage();
+                _goToTeachersPage(context);
               },
             ),
             ListTile(
               title: const Text('Messages'),
               onTap: () {
                 Navigator.pop(context);
-                _goToMessagesPage();
+                _goToMessagesPage(context);
               },
             ),
           ],
@@ -126,16 +108,16 @@ class _MainPageState extends State<MainPage> {
           children: [
             TextButton(
               onPressed: () {
-                _goToMessagesPage();
+                _goToMessagesPage(context);
               },
-              child: Text("${messagesRepository.newMessageCount} New Massages"),
+              child: Text("$newMessageCount New Massages"),
             ),
             const SizedBox(
               height: 10,
             ),
             TextButton(
               onPressed: () {
-                _goToStudentsPage();
+                _goToStudentsPage(context);
               },
               child: Text("${studentsRepository.students.length} Students"),
             ),
@@ -144,7 +126,7 @@ class _MainPageState extends State<MainPage> {
             ),
             TextButton(
               onPressed: () {
-                _goToTeachersPage();
+                _goToTeachersPage(context);
               },
               child: Text("${teachersRepository.teachers.length} Teachers"),
             ),

@@ -1,4 +1,7 @@
-class StudentsRepository{
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class StudentsRepository extends ChangeNotifier{
   final List<Student> students = [
     Student("Rachel", "Greene", 18, "female"),
     Student("Kiara", "Valenzuela", 16, "female"),
@@ -22,8 +25,15 @@ class StudentsRepository{
     else{
       likedStudents.add(student);
     }
+    notifyListeners();
   }
 }
+
+final studentsProvider = ChangeNotifierProvider(
+    (ref){
+      return StudentsRepository();
+    }
+);
 
 class Student{
   String name;
