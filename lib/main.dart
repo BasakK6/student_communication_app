@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:student_communication_app/messages_page.dart';
+import 'package:student_communication_app/pages/messages_page.dart';
 import 'package:student_communication_app/repository/messages_repository.dart';
 import 'package:student_communication_app/repository/students_repository.dart';
 import 'package:student_communication_app/repository/teachers_repository.dart';
-import 'package:student_communication_app/students_page.dart';
-import 'package:student_communication_app/teachers_page.dart';
+import 'package:student_communication_app/pages/students_page.dart';
+import 'package:student_communication_app/pages/teachers_page.dart';
 
 void main() {
   runApp(const ProviderScope(child: StudentApp()));

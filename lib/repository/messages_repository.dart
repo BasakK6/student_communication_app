@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:student_communication_app/model/message.dart';
 
 class MessagesRepository extends ChangeNotifier{
   final List<Message> messages = [
@@ -32,11 +33,3 @@ class NewMessageCount extends StateNotifier<int>{
 final newMessageCountProvider = StateNotifierProvider<NewMessageCount, int>((ref){
   return NewMessageCount(11);
 });
-
-class Message{
-  String text;
-  String sender;
-  DateTime date;
-
-  Message(this.text, this.sender, this.date);
-}
