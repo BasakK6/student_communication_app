@@ -51,6 +51,30 @@ class DataService {
       throw Exception("Teacher could not be added ${response.statusCode}");
     }
   }
+
+  int fakeExceptionCount = 0;
+  Future<List<Teacher>> downloadAllTeachers() async{
+    fakeExceptionCount++;
+
+    if(fakeExceptionCount<3){
+      throw Exception("Failed to load teachers - fake exception ($fakeExceptionCount times)");
+    }
+
+    final response = await http
+        .get(Uri.parse("$base_url${ApiPaths.teachers.withSlash()}"));
+    if (response.statusCode == 200) {
+      final list = jsonDecode(response.body);
+      if(list is List){
+        return list.map<Teacher>((e)=>Teacher.fromMap(e)).toList();
+      }
+      else{
+        throw Exception("Failed to load teachers, list conversion error ${response.statusCode}");
+      }
+
+    } else {
+      throw Exception("Failed to load teachers ${response.statusCode}");
+    }
+  }
 }
 
 final dataServiceProvider = Provider((ref) {

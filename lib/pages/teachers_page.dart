@@ -5,8 +5,7 @@ import 'package:student_communication_app/pages/teacher_form_page.dart';
 import 'package:student_communication_app/repository/teachers_repository.dart';
 
 class TeachersPage extends ConsumerWidget {
-  const TeachersPage({Key? key})
-      : super(key: key);
+  const TeachersPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -15,14 +14,19 @@ class TeachersPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text("Teachers")),
       floatingActionButton: FloatingActionButton(
-        onPressed: ()async{
+        onPressed: () async {
           //return a bool? because it the user presses back button or there is an Exception, the return value is null
-          bool? isSuccessful =  await Navigator.of(context).push(MaterialPageRoute(builder: (context){
-            return const TeacherFormPage();
-          },),);
+          bool? isSuccessful = await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) {
+                return const TeacherFormPage();
+              },
+            ),
+          );
 
-          if(isSuccessful == true){
+          if (isSuccessful == true) {
             //refresh the data source
+            ref.refresh(teachersListProvider);
             print("refresh the teachers page");
           }
         },
@@ -42,7 +46,9 @@ class TeachersPage extends ConsumerWidget {
                     Padding(
                       padding: const EdgeInsets.only(right: 8.0),
                       child: Text(
-                          "${teachersRepository.teachers.length} Teachers",textAlign: TextAlign.center,),
+                        "${teachersRepository.teachers.length} Teachers",
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                     const TeacherDownloadButton()
                   ],
@@ -51,12 +57,29 @@ class TeachersPage extends ConsumerWidget {
             ),
           ),
           Expanded(
-            child: ListView.separated(
-              itemBuilder: (context, index) => TeacherListTile(
-                teacher: teachersRepository.teachers[index],
-              ),
-              separatorBuilder: (context, index) => const Divider(),
-              itemCount: teachersRepository.teachers.length,
+            child: RefreshIndicator(
+              onRefresh: () async {
+                ref.refresh(teachersListProvider);
+              },
+              child: ref.watch(teachersListProvider).when(
+                    data: (data) => ListView.separated(
+                      itemBuilder: (context, index) => TeacherListTile(
+                        teacher: data[index],
+                      ),
+                      separatorBuilder: (context, index) => const Divider(),
+                      itemCount: data.length,
+                    ),
+                    error: (error, stack) => SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(error.toString()),
+                      ),
+                    ),
+                    loading: () => const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
             ),
           ),
         ],
@@ -71,13 +94,14 @@ class TeacherDownloadButton extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<TeacherDownloadButton> createState() => _TeacherDownloadButtonState();
+  ConsumerState<TeacherDownloadButton> createState() =>
+      _TeacherDownloadButtonState();
 }
 
 class _TeacherDownloadButtonState extends ConsumerState<TeacherDownloadButton> {
   bool isLoading = false;
 
-  void negateIsLoading(){
+  void negateIsLoading() {
     setState(() {
       isLoading = !isLoading;
     });
@@ -85,19 +109,22 @@ class _TeacherDownloadButtonState extends ConsumerState<TeacherDownloadButton> {
 
   @override
   Widget build(BuildContext context) {
-    return isLoading ? const CircularProgressIndicator(): IconButton(onPressed: () async {
-      try{
-        negateIsLoading();
-        await ref.read(teachersProvider).download();
-      }
-      catch(_){
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("The teacher could not be loaded")));
-      }
-      finally{
-        negateIsLoading();
-      }
-
-    }, icon: const Icon(Icons.download),);
+    return isLoading
+        ? const CircularProgressIndicator()
+        : IconButton(
+            onPressed: () async {
+              try {
+                negateIsLoading();
+                await ref.read(teachersProvider).download();
+              } catch (_) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("The teacher could not be loaded")));
+              } finally {
+                negateIsLoading();
+              }
+            },
+            icon: const Icon(Icons.download),
+          );
   }
 }
 

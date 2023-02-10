@@ -6,7 +6,7 @@ import 'package:student_communication_app/model/teacher.dart';
 import 'package:student_communication_app/services/data_service.dart';
 
 class TeachersRepository extends ChangeNotifier {
-  final List<Teacher> teachers = [
+  List<Teacher> teachers = [
     Teacher("Gerard", "Carney", 32, "male"),
     Teacher("Elena", "Shepard", 28, "female"),
   ];
@@ -20,8 +20,17 @@ class TeachersRepository extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<List<Teacher>> downloadAllTeachers() async{
+    teachers = await dataService.downloadAllTeachers();
+    return teachers;
+  }
+
 }
 
 final teachersProvider = ChangeNotifierProvider((ref) {
   return TeachersRepository(ref.watch(dataServiceProvider));
+});
+
+final teachersListProvider = FutureProvider((ref){
+    return ref.watch(teachersProvider).downloadAllTeachers();
 });
