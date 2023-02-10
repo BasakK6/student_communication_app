@@ -126,22 +126,40 @@ class _TeacherFormState extends ConsumerState<TeacherFormPage> {
     });
   }
 
+  //define a variable to simulate an exception
+  int fakeExceptionCount = 0;
+
+  //if there is an exception, this function will be called again
+  Future<void> sendToServer() async {
+    fakeExceptionCount++;
+    if (fakeExceptionCount < 3) {
+      throw "Teacher couldn't be saved, will automatically try again";
+    }
+
+    final Teacher teacher = Teacher.fromMap(entered);
+    await ref.read(dataServiceProvider).addTeacher(teacher);
+  }
+
+  //repeat the saving until it's succesful
   Future<void> saveTeacher() async {
-    try {
-      negateIsSaving();
-      final Teacher teacher = Teacher.fromMap(entered);
-      await ref.read(dataServiceProvider).addTeacher(teacher);
+    bool isSaved = false;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Teacher was created")));
-
-      Navigator.of(context).pop(true);
-
-    } catch (_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("The teacher could not be loaded")));
-    } finally {
-      negateIsSaving();
+    while (!isSaved) {
+      try {
+        negateIsSaving();
+        await sendToServer();
+        isSaved = true;
+        final snackBar = ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text("Teacher was added")));
+        await snackBar.closed;
+        Navigator.of(context).pop(true);
+      } catch (e) {
+        final snackBar = ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(e.toString())));
+        await snackBar.closed;
+      } finally {
+        negateIsSaving();
+      }
     }
   }
 }
