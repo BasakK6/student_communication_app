@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student_communication_app/model/teacher.dart';
 import 'package:http/http.dart' as http;
@@ -34,6 +35,15 @@ class DataService {
   }
 
   Future<void> addTeacher(Teacher teacher) async {
+    // FIRESTORE
+    // instance.doc().set requires a docId
+    // direct add() creates an unique id in the server side
+    await FirebaseFirestore.instance.collection("teachers").add(
+      teacher.toMap(),
+    );
+
+
+    // REST API
     String jsonString = jsonEncode(teacher.toMap());
 
     final response =await http.post(
@@ -60,6 +70,13 @@ class DataService {
       throw Exception("Failed to load teachers - fake exception ($fakeExceptionCount times)");
     }
 
+    // FIRESTORE
+    // get every document in the collection
+    final QuerySnapshot<Map<String, dynamic>> querySnapshot =await FirebaseFirestore.instance.collection("teachers").get();
+    final List<Teacher> teachers = querySnapshot.docs.map((e) => Teacher.fromMap(e.data())).toList();
+    return teachers;
+
+    // REST API
     final response = await http
         .get(Uri.parse("$base_url${ApiPaths.teachers.withSlash()}"));
     if (response.statusCode == 200) {

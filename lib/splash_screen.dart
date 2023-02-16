@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,17 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
+  Future<void> addUserInfo() async {
+    CollectionReference users = FirebaseFirestore.instance.collection("users");
+    String? uid =FirebaseAuth.instance.currentUser?.uid;
+    users.doc(uid).set({
+      'isLoggedIn': true,
+      'lastLoginDate': FieldValue.serverTimestamp(), // users can be in different timezones & their date info can be inaccurate so we should use server's time instead.
+    }, SetOptions(
+      merge: true, //patch
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,6 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ? ElevatedButton(
                 onPressed: () async {
                    await signInWithGoogle();
+                   await addUserInfo();
                    goToTheMainPage();
                 }, child: const Text("Google Sign In"))
             : CircularProgressIndicator(),
