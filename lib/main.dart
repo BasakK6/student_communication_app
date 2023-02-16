@@ -1,11 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:student_communication_app/firebase_utilities/google_sign_in.dart';
 import 'package:student_communication_app/pages/messages_page.dart';
 import 'package:student_communication_app/repository/messages_repository.dart';
 import 'package:student_communication_app/repository/students_repository.dart';
 import 'package:student_communication_app/repository/teachers_repository.dart';
 import 'package:student_communication_app/pages/students_page.dart';
 import 'package:student_communication_app/pages/teachers_page.dart';
+import 'package:student_communication_app/splash_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: StudentApp()));
@@ -22,7 +26,7 @@ class StudentApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       debugShowCheckedModeBanner: false,
-      home: const MainPage(title: 'Main Page'),
+      home: const SplashScreen(),//const MainPage(title: 'Main Page'),
     );
   }
 }
@@ -71,11 +75,11 @@ class MainPage extends ConsumerWidget {
           // Important: Remove any padding from the ListView.
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
+            DrawerHeader(
+              decoration: const BoxDecoration(
                 color: Colors.blue,
               ),
-              child: Text("Student's Name"),
+              child: Text(FirebaseAuth.instance.currentUser?.displayName ?? "No User Name"),
             ),
             ListTile(
               title: const Text('Students'),
@@ -96,6 +100,17 @@ class MainPage extends ConsumerWidget {
               onTap: () {
                 Navigator.pop(context);
                 _goToMessagesPage(context);
+              },
+            ),
+            ListTile(
+              title: const Text('Log out'),
+              onTap: () async {
+                await signOutWithGoogle();
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => const SplashScreen(),
+                  )
+                );
               },
             ),
           ],
