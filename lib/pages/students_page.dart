@@ -68,9 +68,12 @@ class StudentListTile extends ConsumerWidget {
           ref.read(studentsProvider).changeLikeStatus(student, doILikeThem);
 
         },
-        icon: Icon(
-            doILikeThem ?  Icons.favorite
-            : Icons.favorite_border ),
+        icon: AnimatedCrossFade(
+          duration: const Duration(seconds: 1),
+          firstChild: const Icon(Icons.favorite),
+          secondChild: const Icon(Icons.favorite_border ),
+          crossFadeState: doILikeThem ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+        ),
       ),
     );
   }
