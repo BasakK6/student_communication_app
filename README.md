@@ -3,7 +3,10 @@
 This project is the companion project of the ["Develop Apps with Flutter"](https://learndigital.withgoogle.com/dijitalatolye/course/develop-app-flutter) course provided by Google Digital Garage. 
 The course language is Turkish. Below is the content of the course. 
 In this project, some of the concepts that are thought in the course were applied. 
-Fake exceptions were also created programmatically in order to learn how to handle exceptions.
+
+- Fake exceptions were also created programmatically in order to learn how to handle exceptions.
+- Rest API created and consumed via the [mockapi.io](https://mockapi.io) platform
+- Firestore Database, Firebase Authentication, Firebase Storage and Firebase Rules were used
 
 1. In-depth knowledge of the dart language
    - Variables and data types
@@ -106,4 +109,6 @@ Fake exceptions were also created programmatically in order to learn how to hand
     - App Markets
 
 ## Screen recording of the app
+
+<img src="https://github.com/BasakK6/student_communication_app/blob/master/readme_assets/android_screen_recording.gif?raw=true" alt="UI screen recording" width="250"/>
 
